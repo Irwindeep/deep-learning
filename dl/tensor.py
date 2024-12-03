@@ -46,13 +46,12 @@ class Tensor:
         data = np.array(self.data.sum())
         requires_grad = self.requires_grad
 
+        depends_on: List[Dependency] = []
         if requires_grad:
             def grad_fn(grad: NDArray) -> NDArray:
                 return grad * np.ones_like(self.data)
             
-            depends_on = [Dependency(self, grad_fn)]
-
-        else: depends_on = []
+            depends_on.append(Dependency(self, grad_fn))
 
         return Tensor(data, requires_grad, depends_on)
     
