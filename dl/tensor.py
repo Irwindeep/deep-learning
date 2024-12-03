@@ -42,6 +42,10 @@ class Tensor:
         self._data = ensure_array(new_data)
         self.grad = None
 
+    @property
+    def T(self) -> 'Tensor':
+        return _transpose(self)
+
     def sum(self) -> 'Tensor':
         data = np.array(self.data.sum())
         requires_grad = self.requires_grad
@@ -192,6 +196,19 @@ def _neg(t: Tensor) -> Tensor:
 
 def _sub(t1: Tensor, t2: Tensor) -> Tensor:
     return t1 + (-t2)
+
+def _transpose(t: Tensor, axes: Optional[tuple[int, int]] = None) -> Tensor:
+    data = t.data.T if axes is None else np.swapaxes(t.data, *axes)
+    requires_grad = t.requires_grad
+
+    depends_on: List[Dependency] = []
+    if requires_grad:
+        def grad_fn(grad: NDArray) -> NDArray:
+            return grad.T if axes is None else np.swapaxes(grad, *axes)
+
+        depends_on.append(Dependency(t, grad_fn))
+
+    return Tensor(data, requires_grad, depends_on)
 
 def _matmul(t1: Tensor, t2: Tensor) -> Tensor:
     data = t1.data @ t2.data
