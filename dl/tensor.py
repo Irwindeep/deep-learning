@@ -60,3 +60,39 @@ class Tensor:
 
     def __repr__(self) -> str:
         return f"Tensor({self.data}, shape={self.shape}, requires_grad={self.requires_grad})"
+    
+    def __add__(self, other: 'Tensor') -> 'Tensor':
+        data = self.data + other.data
+        requires_grad = self.requires_grad or other.requires_grad
+
+        depends_on = []
+
+        if self.requires_grad:
+            def grad_fn1(grad: NDArray) -> NDArray:
+                ndims_added = grad.ndim - self.data.ndim
+                for _ in range(ndims_added):
+                    grad = grad.sum(axis=0)
+
+                for i, dim in enumerate(self.shape):
+                    if dim == 1:
+                        grad = grad.sum(axis=i, keepdims=True)
+                
+                return grad
+            
+            depends_on.append(Dependency(self, grad_fn1))
+
+        if other.requires_grad:
+            def grad_fn2(grad: NDArray) -> NDArray:
+                ndims_added = grad.ndim - other.data.ndim
+                for _ in range(ndims_added):
+                    grad = grad.sum(axis=0)
+
+                for i, dim in enumerate(other.shape):
+                    if dim == 1:
+                        grad = grad.sum(axis=i, keepdims=True)
+                
+                return grad
+            
+            depends_on.append(Dependency(other, grad_fn2))
+
+        return Tensor(data, requires_grad, depends_on)
