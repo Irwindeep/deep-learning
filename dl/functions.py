@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Optional
 import numpy as np
 from numpy.typing import NDArray
 from dl.tensor import Tensor, Dependency
 
+# Activation Functions
 def exp(tensor: Tensor) -> Tensor:
     data = np.exp(tensor.data)
     requires_grad = tensor.requires_grad
@@ -54,3 +55,17 @@ def relu(tensor: Tensor) -> Tensor:
         depends_on.append(Dependency(tensor, grad_fn))
         
     return Tensor(data, requires_grad, depends_on)
+
+# Neural Network
+def linear(input: Tensor, weights: Tensor, bias: Optional[Tensor]) -> Tensor:
+    x = input @ weights
+    if bias is not None: x = x + bias
+
+    return x
+
+# Losses
+def mse_loss(input: Tensor, target: Tensor) -> Tensor:
+    errors = (input - target)
+    loss = (errors**2).sum()/errors.shape[0]
+
+    return loss

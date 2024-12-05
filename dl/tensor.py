@@ -111,11 +111,27 @@ class Tensor:
         self.data *= ensure_tensor(other).data
         return self
     
+    def __invert__(self) -> 'Tensor':
+        return _inv(self)
+    
+    def __truediv__(self, other: Tensorable) -> 'Tensor':
+        return _mul(self, ~ensure_tensor(other))
+    
+    def __rtruediv__(self, other: Tensorable) -> 'Tensor':
+        return _mul(ensure_tensor(other), ~self)
+    
+    def __itruediv__(self, other: Tensorable) -> 'Tensor':
+        self.data /= ensure_tensor(other).data
+        return self
+    
     def __matmul__(self, other: Tensorable) -> 'Tensor':
         return _matmul(self, ensure_tensor(other))
     
     def __getitem__(self, idxs) -> 'Tensor':
         return _slice(self, idxs)
+    
+    def __pow__(self, power: float) -> 'Tensor':
+        return _pow(self, power)
 
 def _add(t1: Tensor, t2: Tensor) -> Tensor:
     data = t1.data + t2.data
@@ -185,6 +201,21 @@ def _mul(t1: Tensor, t2: Tensor) -> Tensor:
 
     return Tensor(data, requires_grad, depends_on)
 
+def _inv(t: Tensor) -> Tensor:
+    if np.any(t.data == 0): raise ValueError("Division by zero is not allowed")
+
+    data = 1/t.data
+    requires_grad = t.requires_grad
+
+    depends_on: List[Dependency] = []
+    if requires_grad:
+        def grad_fn(grad: NDArray) -> NDArray:
+            return - grad * (data * data)
+
+        depends_on.append(Dependency(t, grad_fn))
+
+    return Tensor(data, requires_grad, depends_on)
+
 def _neg(t: Tensor) -> Tensor:
     data = -t.data
     requires_grad = t.requires_grad
@@ -243,6 +274,19 @@ def _slice(t: Tensor, idxs: slice) -> Tensor:
             bigger_grad[idxs] = grad
 
             return bigger_grad
+
+        depends_on.append(Dependency(t, grad_fn))
+
+    return Tensor(data, requires_grad, depends_on)
+
+def _pow(t: Tensor, power: float) -> Tensor:
+    data = t.data ** power
+    requires_grad = t.requires_grad
+
+    depends_on: List[Dependency] = []
+    if requires_grad:
+        def grad_fn(grad: NDArray) -> NDArray:
+            return power * grad * (t.data ** (power-1))
 
         depends_on.append(Dependency(t, grad_fn))
 
