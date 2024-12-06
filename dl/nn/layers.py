@@ -23,7 +23,7 @@ class Linear(Module):
         self.weights = Variable(self.in_features, self.out_features)
         self.bias: Optional[Tensor] = None
         if bias:
-            self.bias = Variable(self.out_features)
+            self.bias = Variable(1, self.out_features)
 
     def forward(self, input: Tensor) -> Tensor:
         return F.linear(input, self.weights, self.bias)

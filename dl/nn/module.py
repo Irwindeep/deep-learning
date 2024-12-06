@@ -1,9 +1,7 @@
 from typing import (
     Iterator,
     Dict,
-    Optional,
-    Any,
-    Callable
+    Any
 )
 import inspect
 from dl.variable import Variable
