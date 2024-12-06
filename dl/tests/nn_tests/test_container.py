@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from dl.tensor import Tensor
-from dl.nn import Sequential, Linear, ReLU, MSELoss
+from dl.nn import Sequential, Linear, ReLU
 
 class TestContainers(unittest.TestCase):
     def test_sequential(self):
