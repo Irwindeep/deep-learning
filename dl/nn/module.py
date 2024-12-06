@@ -15,6 +15,10 @@ class Module:
         self._modules = {}
 
     def variables(self) -> Iterator[Variable]:
+        for _, module in self._modules.items():
+            if isinstance(module, Module):
+                yield from module.variables()
+
         for _, value in inspect.getmembers(self):
             if isinstance(value, Variable): yield value
             elif isinstance(value, Module): yield from value.variables()
