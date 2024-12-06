@@ -6,9 +6,13 @@ from .activations import (
     Tanh
 )
 from .container import Sequential
-from .loss import MSELoss
+from .loss import (
+    BCELoss,
+    MSELoss
+)
 
 __all__ = [
+    "BCELoss",
     "Linear",
     "MSELoss",
     "Module",
