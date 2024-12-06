@@ -14,11 +14,11 @@ train_data, train_labels = dl.Tensor(train_data), dl.Tensor(train_labels)
 test_data, test_labels = dl.Tensor(test_data), dl.Tensor(test_labels)
 
 model = nn.Sequential(
-    nn.Linear(in_features=2, out_features=8),
+    nn.Linear(in_features=2, out_features=4),
     nn.ReLU(),
-    nn.Linear(in_features=8, out_features=8),
+    nn.Linear(in_features=4, out_features=4),
     nn.ReLU(),
-    nn.Linear(in_features=8, out_features=1),
+    nn.Linear(in_features=4, out_features=1),
     nn.Sigmoid()
 )
 

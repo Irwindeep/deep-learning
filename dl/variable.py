@@ -6,7 +6,7 @@ class Variable(Tensor):
         self.random_seed = random_seed
         np.random.seed(self.random_seed)
 
-        data = np.random.uniform(size=tuple(shape))
+        data = np.random.randn(*shape)
         super().__init__(data, requires_grad=True)
 
         self.u = Tensor(np.zeros_like(data))
