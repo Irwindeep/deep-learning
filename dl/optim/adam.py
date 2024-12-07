@@ -15,8 +15,8 @@ class Adam:
         self.unbiased = unbiased
         self.eps = eps
 
-        self.unbiasing_beta1 = 0
-        self.unbiasing_beta2 = 0
+        self.unbiasing_beta1 = 0.0
+        self.unbiasing_beta2 = 0.0
         if self.unbiased:
             self.unbiasing_beta1 = self.beta1
             self.unbiasing_beta2 = self.beta2
@@ -24,9 +24,10 @@ class Adam:
     def step(self, model: Module) -> None:
         for variable in model.variables():
             if variable.grad is None: continue
-            variable.u = self.beta1 * variable.u + (1 - self.beta1) * variable.grad
-            variable.v = self.beta2 * variable.v + (1 - self.beta2) * (variable.grad)**2
-            variable -= self.lr * (variable.u / (1 - self.unbiasing_beta1))/((variable.v / (1 - self.unbiasing_beta2))**0.5 + self.eps)
+            variable.u = self.beta1 * variable.u + (1 - self.beta1) * variable.grad.data
+            variable.v = self.beta2 * variable.v + (1 - self.beta2) * (variable.grad.data)**2
+
+            variable.data -= self.lr * (variable.u/(1 - self.unbiasing_beta1))/((variable.v/(1 - self.unbiasing_beta2))**0.5 + self.eps)
 
         if self.unbiased:
             self.unbiasing_beta1 *= self.beta1

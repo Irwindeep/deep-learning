@@ -9,5 +9,5 @@ class Variable(Tensor):
         data = np.random.randn(*shape)
         super().__init__(data, requires_grad=True)
 
-        self.u = Tensor(np.zeros_like(data))
-        self.v = Tensor(np.zeros_like(data))
+        self.u = np.zeros_like(data)
+        self.v = np.zeros_like(data)
