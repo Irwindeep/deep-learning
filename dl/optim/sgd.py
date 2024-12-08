@@ -23,8 +23,8 @@ class SGD:
             variable.grad.data += self.weight_decay * variable.data
 
             variable.u = self.beta * variable.u + (1 - self.beta) * variable.grad.data
-            variable.u = variable.u/(1 - self.unbiasing_beta)
+            unbiased_u = variable.u/(1 - self.unbiasing_beta)
             
-            variable.data -= (self.lr * variable.u).data
+            variable.data -= (self.lr * unbiased_u).data
 
         if self.unbiased: self.unbiasing_beta *= self.beta
