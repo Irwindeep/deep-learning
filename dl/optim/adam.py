@@ -27,7 +27,7 @@ class Adam:
         for variable in model.variables():
             if variable.grad is None: continue
 
-            variable.grad.data += self.lr * self.weight_decay * variable.data
+            variable.grad.data += self.weight_decay * variable.data
 
             variable.u = self.beta1 * variable.u + (1 - self.beta1) * variable.grad.data
             unbiased_u = variable.u/(1-self.unbiasing_beta1)
