@@ -26,28 +26,15 @@ optimizer = dl.optim.Adam()
 loss_fn = nn.BCELoss()
 batch_size = 32
 
-starts = np.arange(0, train_data.shape[0], batch_size)
-for epoch in range(1000):
-    epoch_loss = 0.0
-
-    np.random.shuffle(starts)
-    for start in starts:
-        end = start + batch_size
-        inputs, outputs = train_data[start: end], train_labels[start: end]
-
-        model.zero_grad()
-        predicted = model(inputs)
-
-        loss = loss_fn(predicted, outputs)
-        loss.backward()
-        epoch_loss += loss.data
-
-        optimizer.step(model)
-
-    if (epoch+1)%100 == 0 or epoch == 0: print(f"Epoch[{epoch+1:04}/1000]\tLoss: {epoch_loss}")
+epoch_loss_history = dl.train(
+    model=model, train_data=train_data,
+    train_labels=train_labels,
+    optimizer=optimizer, loss_fn=loss_fn,
+    num_epochs=1000
+)
 
 test_pred = model(test_data)
-print(f"\nTest Accuracy: {sum(
+print(f"Test Accuracy: {sum(
     np.where(test_pred.data.reshape(-1) > 0.5, 1, 0) ==
     test_labels.data.reshape(-1)
 )*2}%")

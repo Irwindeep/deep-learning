@@ -1,6 +1,7 @@
 from dl.nn import Module
+from dl.optim.optimizer import Optimizer
 
-class SGD:
+class SGD(Optimizer):
     def __init__(
         self,
         lr: float = 0.01,
@@ -8,6 +9,8 @@ class SGD:
         beta: float = 0.0,
         unbiased: bool = False
     ) -> None:
+        super().__init__()
+
         self.lr = lr
         self.weight_decay = weight_decay
         self.beta = beta

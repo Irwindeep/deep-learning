@@ -1,6 +1,7 @@
 from dl.nn import Module
+from dl.optim.optimizer import Optimizer
 
-class Adam:
+class Adam(Optimizer):
     def __init__(
         self,
         lr: float = 0.01,
@@ -9,7 +10,9 @@ class Adam:
         beta2: float = 0.999,
         unbiased: bool = True,
         eps: float = 1e-8
-    ) -> None:
+    ) -> None:        
+        super().__init__()
+
         self.lr = lr
         self.weight_decay = weight_decay
         self.beta1 = beta1
