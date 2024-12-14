@@ -99,8 +99,8 @@ def bce_loss(input: Tensor, target: Tensor) -> Tensor:
     return loss
 
 def cross_entropy(input: Tensor, target: Tensor) -> Tensor:
-    input_data: NDArray = np.exp(input.data - np.max(input.data))
-    input_data = input_data/np.sum(input_data)
+    input_data: NDArray = np.exp(input.data - np.max(input.data, axis=-1, keepdims=True))
+    input_data = input_data/np.sum(input_data, axis=-1, keepdims=True)
 
     data = - np.sum(target.data * np.log(input_data + 1e-12))/input_data.shape[0]
     requires_grad = input.requires_grad

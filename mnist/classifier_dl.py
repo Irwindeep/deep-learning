@@ -17,8 +17,7 @@ test_data, test_labels = dl.Tensor(test_data), dl.Tensor(test_labels)
 
 train_labels = dl.Tensor(np.eye(10)[train_labels.data.reshape(-1)])
 
-print(f"Train Data: {train_data.shape}, Train Labels: {train_labels.shape}")
-print(f"Test Data {test_data.shape}, Test Labels: {test_labels.shape}")
+np.random.seed(20)
 
 model = nn.Sequential(
     nn.Linear(in_features=784, out_features=512),
@@ -28,15 +27,15 @@ model = nn.Sequential(
     nn.Linear(in_features=256, out_features=10)
 )
 
-optimizer = dl.optim.Adam(lr=0.001)
+optimizer = dl.optim.Adam()
 loss_fn = nn.CrossEntropyLoss()
-batch_size = 64
+batch_size = 1024
 
 epoch_loss_history = dl.train(
     model=model, train_data=train_data,
     train_labels=train_labels,
     optimizer=optimizer, loss_fn=loss_fn,
-    num_epochs=10
+    batch_size=batch_size, num_epochs=10
 )
 
 test_pred = model(test_data)

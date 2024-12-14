@@ -12,7 +12,7 @@ transform = torchvision.transforms.Compose([
 train_data = datasets.MNIST(root="./data/", train=True, transform=transform, download=False)
 test_data = datasets.MNIST(root="./data/", train=False, transform=transform, download=False)
 
-batch_size = 64
+batch_size = 1024
 torch.manual_seed(12)
 
 train_loader = DataLoader(train_data, batch_size=batch_size)
@@ -27,8 +27,7 @@ class Model(nn.Module):
             nn.ReLU(),
             nn.Linear(in_features=512, out_features=256),
             nn.ReLU(),
-            nn.Linear(in_features=256, out_features=10),
-            nn.Softmax()
+            nn.Linear(in_features=256, out_features=10)
         )
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
@@ -37,7 +36,7 @@ class Model(nn.Module):
     
 model = Model()
 loss = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(params=model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(params=model.parameters(), lr=0.01)
 
 for epoch in range(10):
     epoch_loss = 0.0
