@@ -15,3 +15,10 @@ class BCELoss(Module):
 
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         return F.bce_loss(input, target)
+
+class CrossEntropyLoss(Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def forward(self, input: Tensor, target: Tensor) -> Tensor:
+        return F.cross_entropy(input, target)

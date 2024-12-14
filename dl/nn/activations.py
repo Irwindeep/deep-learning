@@ -22,3 +22,10 @@ class Tanh(Module):
 
     def forward(self, input: Tensor) -> Tensor:
         return F.tanh(input)
+
+class Softmax(Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def forward(self, input: Tensor) -> Tensor:
+        return F.softmax(input)

@@ -3,21 +3,25 @@ from .layers import Linear
 from .activations import (
     ReLU,
     Sigmoid,
-    Tanh
+    Tanh,
+    Softmax
 )
 from .container import Sequential
 from .loss import (
     BCELoss,
-    MSELoss
+    MSELoss,
+    CrossEntropyLoss
 )
 
 __all__ = [
     "BCELoss",
+    "CrossEntropyLoss",
     "Linear",
     "MSELoss",
     "Module",
     "ReLU",
     "Sequential",
     "Sigmoid",
+    "Softmax",
     "Tanh",
 ]

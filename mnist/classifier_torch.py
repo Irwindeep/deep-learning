@@ -27,7 +27,8 @@ class Model(nn.Module):
             nn.ReLU(),
             nn.Linear(in_features=512, out_features=256),
             nn.ReLU(),
-            nn.Linear(in_features=256, out_features=10)
+            nn.Linear(in_features=256, out_features=10),
+            nn.Softmax()
         )
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:

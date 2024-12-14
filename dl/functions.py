@@ -5,7 +5,7 @@ from dl.tensor import Tensor, Dependency
 
 # Usefule Functions
 def exp(tensor: Tensor) -> Tensor:
-    data = np.exp(tensor.data)
+    data = np.exp(np.clip(tensor.data, -50, 50))
     requires_grad = tensor.requires_grad
 
     depends_on: List[Dependency] = []
@@ -70,6 +70,12 @@ def relu(tensor: Tensor) -> Tensor:
         
     return Tensor(data, requires_grad, depends_on)
 
+def softmax(tensor: Tensor) -> Tensor:
+    output = exp(tensor)
+    output = output/output.sum()
+
+    return output
+
 # Neural Network
 def linear(input: Tensor, weights: Tensor, bias: Optional[Tensor]) -> Tensor:
     x = input @ weights
@@ -90,4 +96,9 @@ def bce_loss(input: Tensor, target: Tensor) -> Tensor:
         (1-target).T @ log(1 - input)
     ).sum()/input.shape[0]
     
+    return loss
+
+def cross_entropy(input: Tensor, target: Tensor) -> Tensor:
+    loss = -(target * log(input)).sum()/input.shape[0]
+
     return loss
