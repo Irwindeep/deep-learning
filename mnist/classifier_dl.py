@@ -29,7 +29,7 @@ model = nn.Sequential(
     nn.Softmax()
 )
 
-optimizer = dl.optim.Adam()
+optimizer = dl.optim.Adam(lr=0.001)
 loss_fn = nn.CrossEntropyLoss()
 batch_size = 64
 

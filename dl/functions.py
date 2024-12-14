@@ -71,7 +71,7 @@ def relu(tensor: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 def softmax(tensor: Tensor) -> Tensor:
-    output = exp(tensor)
+    output = exp(tensor - np.max(tensor.data))
     output = output/output.sum()
 
     return output
@@ -99,6 +99,7 @@ def bce_loss(input: Tensor, target: Tensor) -> Tensor:
     return loss
 
 def cross_entropy(input: Tensor, target: Tensor) -> Tensor:
-    loss = -(target * log(input)).sum()/input.shape[0]
+    log_input = log(input)
+    loss = -(target * log_input).sum()/input.shape[0]
 
     return loss
