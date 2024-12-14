@@ -5,7 +5,7 @@ from dl.tensor import Tensor, Dependency
 
 # Usefule Functions
 def exp(tensor: Tensor) -> Tensor:
-    data = np.exp(np.clip(tensor.data, -50, 50))
+    data = np.exp(tensor.data)
     requires_grad = tensor.requires_grad
 
     depends_on: List[Dependency] = []
@@ -71,8 +71,8 @@ def relu(tensor: Tensor) -> Tensor:
     return Tensor(data, requires_grad, depends_on)
 
 def softmax(tensor: Tensor) -> Tensor:
-    output = exp(tensor - np.max(tensor.data))
-    output = output/output.sum()
+    output = exp(tensor - np.max(tensor.data, axis=-1, keepdims=True))
+    output = output/np.sum(output.data, axis=-1, keepdims=True)
 
     return output
 
