@@ -75,6 +75,9 @@ class Tensor:
             backward_grad = dependency.grad_fn(grad.data)
             dependency.tensor.backward(Tensor(backward_grad))
 
+    def reshape(self, *shape) -> 'Tensor':
+        return _reshape(self, *shape)
+
     def __repr__(self) -> str:
         return f"Tensor({self.data}, shape={self.shape}, requires_grad={self.requires_grad})"
     
@@ -132,6 +135,19 @@ class Tensor:
     
     def __pow__(self, power: float) -> 'Tensor':
         return _pow(self, power)
+    
+def _reshape(t: Tensor, *shape) -> Tensor:
+    data = t.data.reshape(shape)
+    requires_grad = t.requires_grad
+
+    depends_on: List[Dependency] = []
+    if requires_grad:
+        def grad_fn(grad: NDArray) -> NDArray:
+            return grad.reshape(t.shape)
+
+        depends_on.append(Dependency(t, grad_fn))
+
+    return Tensor(data, requires_grad, depends_on)
 
 def _add(t1: Tensor, t2: Tensor) -> Tensor:
     data = t1.data + t2.data
