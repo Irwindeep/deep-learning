@@ -1,5 +1,10 @@
 from .module import Module
-from .layers import Linear
+from .layers import (
+    Linear,
+    Conv2d,
+    MaxPool2d,
+    AvgPool2d
+)
 from .activations import (
     ReLU,
     Sigmoid,
@@ -14,9 +19,12 @@ from .loss import (
 )
 
 __all__ = [
+    "AvgPool2d",
     "BCELoss",
+    "Conv2d",
     "CrossEntropyLoss",
     "Linear",
+    "MaxPool2d",
     "MSELoss",
     "Module",
     "ReLU",

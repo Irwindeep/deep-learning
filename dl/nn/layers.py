@@ -5,7 +5,10 @@ from dl.nn.module import Module
 import dl.functions as F
 
 __all__ = [
-    "Linear"
+    "AvgPool2d",
+    "Conv2d",
+    "Linear",
+    "MaxPool2d"
 ]
 
 class Linear(Module):
@@ -30,3 +33,67 @@ class Linear(Module):
     
     def __repr__(self) -> str:
         return f"Linear(in_features={self.in_features}, out_features={self.out_features}, bias={True if self.bias else False})"
+
+class Conv2d(Module):
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: int,
+        stride: int = 1,
+        padding: int = 0
+    ):
+        super().__init__()
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+
+        self.weights = Variable(
+            self.kernel_size, self.kernel_size,
+            self.in_channels, self.out_channels,
+        )
+
+        self.stride = stride
+        self.padding = padding
+
+    def forward(self, input: Tensor) -> Tensor:
+        if self.padding > 0: input = F.pad(input, self.padding)
+        return F.conv2d(input, self.weights, self.stride)
+    
+    def __repr__(self) -> str:
+        return f"Conv2d(in_channels={self.in_channels}, out_channels={self.out_channels}, kernel_size={self.kernel_size})"
+
+class MaxPool2d(Module):
+    def __init__(
+        self,
+        kernel_size: int,
+        stride: int = 1
+    ):
+        super().__init__()
+
+        self.kernel_size = kernel_size
+        self.stride = stride
+
+    def forward(self, input: Tensor) -> Tensor:
+        return F.max_pool_2d(input, self.kernel_size, self.stride)
+    
+    def __repr__(self) -> str:
+        return f"MaxPool2d(kernel_size={self.kernel_size}, stride={self.stride})"
+
+class AvgPool2d(Module):
+    def __init__(
+        self,
+        kernel_size: int,
+        stride: int = 1
+    ):
+        super().__init__()
+
+        self.kernel_size = kernel_size
+        self.stride = stride
+
+    def forward(self, input: Tensor) -> Tensor:
+        return F.avg_pool2d(input, self.kernel_size, self.stride)
+    
+    def __repr__(self) -> str:
+        return f"AvgPool2d(kernel_size={self.kernel_size}, stride={self.stride})"
