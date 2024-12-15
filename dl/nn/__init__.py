@@ -3,7 +3,8 @@ from .layers import (
     Linear,
     Conv2d,
     MaxPool2d,
-    AvgPool2d
+    AvgPool2d,
+    Flatten
 )
 from .activations import (
     ReLU,
@@ -23,6 +24,7 @@ __all__ = [
     "BCELoss",
     "Conv2d",
     "CrossEntropyLoss",
+    "Flatten",
     "Linear",
     "MaxPool2d",
     "MSELoss",

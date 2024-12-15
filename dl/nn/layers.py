@@ -97,3 +97,21 @@ class AvgPool2d(Module):
     
     def __repr__(self) -> str:
         return f"AvgPool2d(kernel_size={self.kernel_size}, stride={self.stride})"
+
+class Flatten(Module):
+    def __init__(
+        self,
+        start_dim: int = 1,
+        end_dim: int = -1
+    ):
+        super().__init__()
+
+        self.start_dim = start_dim
+        self.end_dim = end_dim
+
+    def forward(self, input: Tensor) -> Tensor:
+        if self.end_dim < 0:
+            self.end_dim = input.data.ndim + self.end_dim
+
+        new_shape = input.shape[:self.start_dim] + (-1,) + input.shape[self.end_dim + 1:]
+        return input.reshape(*new_shape)
