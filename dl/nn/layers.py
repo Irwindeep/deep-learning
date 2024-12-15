@@ -52,6 +52,7 @@ class Conv2d(Module):
         self.weights = Variable(
             self.kernel_size, self.kernel_size,
             self.in_channels, self.out_channels,
+            n_axis=(0, 1)
         )
 
         self.stride = stride

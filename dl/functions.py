@@ -39,7 +39,7 @@ def pad(tensor: Tensor, padding: int) -> Tensor:
     depends_on: List[Dependency] = []
     if requires_grad:
         def grad_fn(grad: NDArray) -> NDArray:
-            return grad[padding:-padding, :][:, padding:-padding]
+            return grad[:, padding:-padding, padding:-padding, :]
 
         depends_on.append(Dependency(tensor, grad_fn))
 
@@ -126,21 +126,18 @@ def conv2d(input: Tensor, weights: Tensor, stride: int) -> Tensor:
     depends_on: List[Dependency] = []
     if input.requires_grad:
         def grad_fn1(grad: NDArray) -> NDArray:
-            pad_h = (h - 1) * stride + k - out_h
-            pad_w = (w - 1) * stride + k - out_w
-            pad_top, pad_left = pad_h//2, pad_w//2
-            pad_bottom, pad_right = pad_h - pad_top, pad_w - pad_left
+            grad_input = np.zeros_like(input.data)
 
-            return conv_im2col(
-                np.pad(
-                    grad,
-                    ((0, 0), (pad_top, pad_bottom), (pad_left, pad_right), (0, 0)),
-                    mode="constant",
-                    constant_values=0
-                ),
-                np.flip(weights.data, axis=(0, 1)).reshape(k, k, out_c, in_c),
-                stride
-            )[1]
+            for i in range(out_h):
+                for j in range(out_w):
+                    grad_patch = grad[:, i, j, :, None, None, None]
+                    grad_input[
+                        :, i * stride:i * stride + k, j * stride:j * stride + k, :
+                    ] += np.sum(
+                        grad_patch * weights.data.transpose(3, 0, 1, 2)[None, :, :, :, :], axis=1
+                    )
+
+            return grad_input
 
         depends_on.append(Dependency(input, grad_fn1))
 
