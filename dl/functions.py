@@ -132,7 +132,7 @@ def linear(input: Tensor, weights: Tensor, bias: Optional[Tensor]) -> Tensor:
     return x
 
 def conv2d(input: Tensor, weights: Tensor, stride: int) -> Tensor:
-    _, h, w, in_c = input.data.shape
+    _, _, _, in_c = input.data.shape
     k, _, _, out_c = weights.data.shape
 
     input_patches, data = conv_im2col(input.data, weights.data, stride)
