@@ -62,6 +62,22 @@ def conv_im2col(input: NDArray, weights: NDArray, stride: int) -> Tuple[NDArray,
     data = input_patches @ weights.reshape(-1, out_c)
     return input_patches, data.reshape(batch_size, out_h, out_w, out_c)
 
+def col2im(cols: NDArray, input_shape: Tuple[int, ...], kernel_size: int, stride: int) -> NDArray:
+    batch_size, h, w, in_c = input_shape
+    out_h = (h - kernel_size) // stride + 1
+    out_w = (w - kernel_size) // stride + 1
+
+    grad_input = np.zeros((batch_size, h, w, in_c), dtype=cols.dtype)
+    batch_stride, h_s, w_s, c_s = grad_input.strides
+
+    patches = np.lib.stride_tricks.as_strided(
+        grad_input, shape=(batch_size, out_h, out_w, kernel_size, kernel_size, in_c),
+        strides=(batch_stride, h_s * stride, w_s * stride, h_s, w_s, c_s)
+    )
+    np.add.at(patches, np.s_[:], cols.reshape(patches.shape))
+    
+    return grad_input
+
 # Activation Functions
 def sigmoid(tensor: Tensor) -> Tensor:
     data = 1/(1 + np.exp(-tensor.data))
@@ -118,7 +134,6 @@ def linear(input: Tensor, weights: Tensor, bias: Optional[Tensor]) -> Tensor:
 def conv2d(input: Tensor, weights: Tensor, stride: int) -> Tensor:
     _, h, w, in_c = input.data.shape
     k, _, _, out_c = weights.data.shape
-    out_h, out_w = (h - k)//stride + 1, (w - k)//stride + 1
 
     input_patches, data = conv_im2col(input.data, weights.data, stride)
     requires_grad = input.requires_grad or weights.requires_grad
@@ -126,17 +141,9 @@ def conv2d(input: Tensor, weights: Tensor, stride: int) -> Tensor:
     depends_on: List[Dependency] = []
     if input.requires_grad:
         def grad_fn1(grad: NDArray) -> NDArray:
-            grad_input = np.zeros_like(input.data)
-
-            for i in range(out_h):
-                for j in range(out_w):
-                    grad_patch = grad[:, i, j, :, None, None, None]
-                    grad_input[
-                        :, i * stride:i * stride + k, j * stride:j * stride + k, :
-                    ] += np.sum(
-                        grad_patch * weights.data.transpose(3, 0, 1, 2)[None, :, :, :, :], axis=1
-                    )
-
+            grad = grad.reshape(-1, out_c)
+            grad_input_col = grad @ weights.data.reshape(-1, out_c).T
+            grad_input = col2im(grad_input_col, input.data.shape, k, stride)
             return grad_input
 
         depends_on.append(Dependency(input, grad_fn1))
