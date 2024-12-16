@@ -74,7 +74,9 @@ def col2im(cols: NDArray, input_shape: Tuple[int, ...], kernel_size: int, stride
         grad_input, shape=(batch_size, out_h, out_w, kernel_size, kernel_size, in_c),
         strides=(batch_stride, h_s * stride, w_s * stride, h_s, w_s, c_s)
     )
-    np.add.at(patches, np.s_[:], cols.reshape(patches.shape))
+    
+    # Adding np.bool to keep mypy happy
+    np.add.at(patches, np.bool(np.s_[:]), cols.reshape(patches.shape))
     
     return grad_input
 
@@ -174,17 +176,12 @@ def max_pool_2d(input: Tensor, kernel_size: int, stride: int) -> Tensor:
     depends_on: List[Dependency] = []
     if requires_grad:
         def grad_fn(grad: NDArray) -> NDArray:
-            grad_input = np.zeros_like(input.data)
             max_mask = (strided == np.max(strided, axis=(3, 4), keepdims=True))
-
             grad_broadcast = grad[:, :, :, None, None, :]
             grad_strided = max_mask * grad_broadcast
 
-            for i in range(kernel_size):
-                for j in range(kernel_size):
-                    grad_input[:, i::stride, j::stride, :] += grad_strided[:, :, :, i, j, :]
-            
-            return grad_input
+            grad_cols = grad_strided.reshape(batch_size, out_h, out_w, -1)
+            return col2im(grad_cols, input.data.shape, kernel_size, stride)
 
         depends_on.append(Dependency(input, grad_fn))
 
