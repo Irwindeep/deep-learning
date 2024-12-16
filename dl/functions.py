@@ -176,12 +176,16 @@ def max_pool_2d(input: Tensor, kernel_size: int, stride: int) -> Tensor:
     depends_on: List[Dependency] = []
     if requires_grad:
         def grad_fn(grad: NDArray) -> NDArray:
+            grad_input = np.zeros_like(input.data)
             max_mask = (strided == np.max(strided, axis=(3, 4), keepdims=True))
             grad_broadcast = grad[:, :, :, None, None, :]
             grad_strided = max_mask * grad_broadcast
 
-            grad_cols = grad_strided.reshape(batch_size, out_h, out_w, -1)
-            return col2im(grad_cols, input.data.shape, kernel_size, stride)
+            for i in range(kernel_size):
+                for j in range(kernel_size):
+                    grad_input[:, i::stride, j::stride, :] += grad_strided[:, :, :, i, j, :]
+            
+            return grad_input
 
         depends_on.append(Dependency(input, grad_fn))
 
