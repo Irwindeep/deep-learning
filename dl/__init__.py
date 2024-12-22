@@ -50,6 +50,18 @@ def train(
     
     return epoch_loss_history
 
+def split(
+    tensor: Tensor,
+    sections: int,
+    axis: int
+) -> List[Tensor]:
+    datas = list(np.split(tensor.data, sections, axis))
+    requires_grad = [tensor.requires_grad for _ in range(sections)]
+
+    # TODO: Implement dependencies
+    # for now
+    return [tensor]
+
 __all__ = [
     "Tensor",
     "Variable"
