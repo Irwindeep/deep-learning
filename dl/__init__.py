@@ -1,12 +1,13 @@
 from typing import List
 from tqdm import tqdm
 import numpy as np
+from numpy.typing import NDArray
 
 from . import functions
 from . import nn
 from . import optim
 
-from dl.tensor import Tensor
+from dl.tensor import Tensor, Dependency
 from dl.variable import Variable
 
 def train(
@@ -41,7 +42,7 @@ def train(
 
             np.random.shuffle(starts)
             epoch_loss = sum(
-                train_batch(start) for start in starts
+                train_batch(int(start)) for start in starts
             )
 
             epoch_loss_history.append(epoch_loss)
@@ -55,14 +56,30 @@ def split(
     sections: int,
     axis: int
 ) -> List[Tensor]:
-    datas = list(np.split(tensor.data, sections, axis))
-    requires_grad = [tensor.requires_grad for _ in range(sections)]
+    data_arrays = list(np.split(tensor.data, sections, axis=axis))
+    requires_grads = [tensor.requires_grad for _ in range(sections)]
 
-    # TODO: Implement dependencies
-    # for now
-    return [tensor]
+    depends_ons: List[List[Dependency]] = [[] for _ in range(sections)]
+    tensors: List[Tensor] = []
+
+    for i in range(sections):
+        if requires_grads[i]:
+            def grad_fn(grad: NDArray, section=i) -> NDArray:
+                merging_grads = [
+                    np.zeros_like(data_arrays[j]) if j != section else grad
+                    for j in range(sections)
+                ]
+                print(merging_grads)
+
+                return np.concatenate(merging_grads, axis=axis)
+            depends_ons[i].append(Dependency(tensor, grad_fn))
+
+        tensors.append(Tensor(data_arrays[i], requires_grads[i], depends_ons[i]))
+
+    return tensors
 
 __all__ = [
     "Tensor",
+    "Dependency",
     "Variable"
 ]
