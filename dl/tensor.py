@@ -22,11 +22,11 @@ class Tensor:
             self,
             data: Arrayable,
             requires_grad: bool = False,
-            depends_on: List[Dependency] = []
+            depends_on: Optional[List[Dependency]] = None
     ) -> None:
         self._data = ensure_array(data)
         self.requires_grad = requires_grad
-        self.depends_on = depends_on
+        self.depends_on: List[Dependency] = depends_on if depends_on else []
 
         self.shape = self._data.shape
         self.grad: Optional['Tensor'] = None
