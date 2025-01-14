@@ -26,7 +26,7 @@ class Linear(Module):
         self.weights = Variable(self.in_features, self.out_features)
         self.bias: Optional[Tensor] = None
         if bias:
-            self.bias = Variable(1, self.out_features)
+            self.bias = Variable(self.out_features)
 
     def forward(self, input: Tensor) -> Tensor:
         return F.linear(input, self.weights, self.bias)
@@ -115,3 +115,38 @@ class Flatten(Module):
 
         new_shape = input.shape[:self.start_dim] + (-1,) + input.shape[self.end_dim + 1:]
         return input.reshape(*new_shape)
+    
+    def __repr__(self):
+        return f"Flatten(start_dim={self.start_dim}, end_dim={self.end_dim})"
+
+class RNNCell(Module):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        bias: bool = True,
+        activation: str = "tanh"
+    ):
+        super().__init__()
+
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.bias = bias
+        self.activation = activation
+
+        self.weight_ih = Variable(self.hidden_size, self.input_size)
+        self.weight_hh = Variable(self.hidden_size, self.hidden_size)
+
+        self.bias_ih: Optional[Tensor] = None
+        self.bias_hh: Optional[Tensor] = None
+        if bias:
+            self.bias_ih = Variable(self.hidden_size)
+            self.bias_hh = Variable(self.hidden_size)
+
+    def forward(self, input: Tensor, hx: Optional[Tensor] = None) -> Tensor:
+        return F.rnn_cell(
+            input, self.weight_ih, self.weight_hh, self.bias_ih, self.bias_hh, hx
+        )
+    
+    def __repr__(self):
+        return f"RNNCell(input_size={self.input_size}, hidden_size={self.hidden_size})"

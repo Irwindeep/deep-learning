@@ -196,6 +196,21 @@ def avg_pool2d(input: Tensor, kernel_size: int, stride: int) -> Tensor:
 
     return conv2d(input, weights, stride)
 
+def rnn_cell(
+        input: Tensor,
+        weights_ih: Tensor,
+        weights_hh: Tensor,
+        bias_ih: Optional[Tensor],
+        bias_hh: Optional[Tensor],
+        hx: Optional[Tensor] = None
+    ) -> Tensor:
+    x = (input @ weights_ih)
+    if hx: x = x + (hx @ weights_hh)
+    if bias_ih and bias_hh:
+        x = x + bias_ih + bias_hh
+
+    return x
+
 # Losses
 def mse_loss(input: Tensor, target: Tensor) -> Tensor:
     errors = (input - target)
