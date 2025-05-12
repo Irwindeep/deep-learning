@@ -2,7 +2,8 @@ from typing import List, Tuple
 
 import torch
 import torch.nn as nn
-from utils import ConvBlock, UpsampleBlock
+
+from .utils import ConvBlock, UpsampleBlock
 
 
 class VAE(nn.Module):
