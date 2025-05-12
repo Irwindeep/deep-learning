@@ -66,7 +66,7 @@ class UpsampleBlock(nn.Module):
 
 class VAELoss(nn.Module):
     def __init__(self):
-        super(VAELoss, self)
+        super(VAELoss, self).__init__()
         self.mse = nn.MSELoss(reduction="sum")
 
     def forward(
