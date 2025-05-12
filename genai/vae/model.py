@@ -37,7 +37,7 @@ class VAE(nn.Module):
                 for out_chann, in_chann in list(zip(out_channs, in_channs))[::-1]
             ]
         )
-        self.tanh = nn.Tanh()
+        self.sigmoid = nn.Sigmoid()
 
     def encode(self, input: torch.Tensor) -> Tuple[torch.Tensor, ...]:
         encoded_ip = self.encoder(input)
@@ -49,7 +49,7 @@ class VAE(nn.Module):
 
     def decode(self, input: torch.Tensor) -> torch.Tensor:
         output = self.decoder(input)
-        return self.tanh(output)
+        return self.sigmoid(output)
 
     def forward(self, input: torch.Tensor) -> Tuple[torch.Tensor, ...]:
         mu, logvar = self.encode(input)

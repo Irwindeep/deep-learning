@@ -29,18 +29,16 @@ class AnimeFaceDataset(Dataset):
         return image
 
 
-def get_transform(size: int) -> Tuple[Callable, Callable]:
+def get_transform(size: int) -> Callable:
     transform = transforms.Compose(
         [
             transforms.Resize((size, size)),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
-    inv_norm = transforms.Normalize((-1, -1, -1), (2, 2, 2))
 
-    return transform, inv_norm
+    return transform
 
 
 def get_datasets(root: str, transform: Callable, seed: int = 12) -> Tuple[Dataset, ...]:
