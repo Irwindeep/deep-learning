@@ -65,4 +65,4 @@ class VAE(nn.Module):
         return nn.Sequential(ConvBlock(*args, **kwargs), nn.MaxPool2d(2, 2))
 
     def _make_head(self, *args, **kwargs) -> nn.Module:
-        return nn.Sequential(nn.Conv2d(*args, **kwargs), nn.Sigmoid())
+        return nn.Sequential(nn.Conv2d(*args, **kwargs), nn.MaxPool2d(2, 2))
