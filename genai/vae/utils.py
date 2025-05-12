@@ -62,3 +62,21 @@ class UpsampleBlock(nn.Module):
         output = self.conv(upsampled_ip)
 
         return output
+
+
+class VAELoss(nn.Module):
+    def __init__(self):
+        super(VAELoss, self)
+        self.mse = nn.MSELoss(reduction="sum")
+
+    def forward(
+        self,
+        X_recon: torch.Tensor,
+        X_target: torch.Tensor,
+        mu: torch.Tensor,
+        logvar: torch.Tensor,
+    ) -> torch.Tensor:
+        recon_loss = self.mse(X_recon, X_target)
+        kl_div_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+
+        return recon_loss + kl_div_loss
