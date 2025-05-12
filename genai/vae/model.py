@@ -56,7 +56,7 @@ class VAE(nn.Module):
 
         # reparametrization trick
         eps = torch.rand_like(logvar, device=logvar.device)
-        decoder_input = mu + eps * logvar
+        decoder_input = mu + eps * logvar.exp()
 
         output = self.decode(decoder_input)
         return output, mu, logvar
