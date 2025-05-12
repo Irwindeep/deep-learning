@@ -67,7 +67,7 @@ class UpsampleBlock(nn.Module):
 class VAELoss(nn.Module):
     def __init__(self):
         super(VAELoss, self).__init__()
-        self.bce = nn.BCELoss(reduction="sum")
+        self.mse = nn.MSELoss(reduction="sum")
 
     def forward(
         self,
@@ -76,7 +76,7 @@ class VAELoss(nn.Module):
         mu: torch.Tensor,
         logvar: torch.Tensor,
     ) -> torch.Tensor:
-        recon_loss = self.bce(X_recon, X_target)
+        recon_loss = self.mse(X_recon, X_target)
         kl_div_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
         return recon_loss + kl_div_loss
