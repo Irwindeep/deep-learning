@@ -12,7 +12,7 @@ class AnimeFaceDataset(Dataset):
     def __init__(self, root: str, transform: Optional[Callable]) -> None:
         super(AnimeFaceDataset, self).__init__()
 
-        self.root = (root,)
+        self.root = root
         self.image_files = os.listdir(root)
         self.transform = transform
 
@@ -21,7 +21,7 @@ class AnimeFaceDataset(Dataset):
 
     def __getitem__(self, index: int) -> Any:
         image_file = self.image_files[index]
-        image = Image.open(image_file)
+        image = Image.open(os.path.join(self.root, image_file))
 
         if self.transform:
             return self.transform(image)
