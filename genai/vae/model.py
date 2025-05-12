@@ -18,11 +18,11 @@ class VAE(nn.Module):
             ]
         )
 
-        self.mu_head = self._make_layer(
-            in_channs[-1], out_channs[-1], kernel_size=kernel_size
+        self.mu_head = self._make_head(
+            in_channs[-1], out_channs[-1], kernel_size=kernel_size, padding="same"
         )
-        self.logvar_head = self._make_layer(
-            in_channs[-1], out_channs[-1], kernel_size=kernel_size
+        self.logvar_head = self._make_head(
+            in_channs[-1], out_channs[-1], kernel_size=kernel_size, padding="same"
         )
 
         self.decoder = nn.Sequential(
@@ -63,3 +63,8 @@ class VAE(nn.Module):
 
     def _make_layer(self, *args, **kwargs) -> nn.Module:
         return nn.Sequential(ConvBlock(*args, **kwargs), nn.MaxPool2d(2, 2))
+
+    def _make_head(self, *args, **kwargs) -> nn.Module:
+        return nn.Sequential(
+            nn.Conv2d(*args, **kwargs), nn.MaxPool2d(2, 2), nn.Sigmoid()
+        )
