@@ -4,12 +4,6 @@ import torch.nn as nn
 from .utils import ConvBlock, UpsampleBlock
 
 
-def initialize_weights(model: nn.Module) -> None:
-    for module in model.modules():
-        if isinstance(module, (nn.Conv2d, nn.BatchNorm2d)):
-            nn.init.normal_(module.weight.data, 0.0, 0.02)
-
-
 class Discriminator(nn.Module):
     def __init__(
         self,
@@ -44,7 +38,6 @@ class Discriminator(nn.Module):
             nn.Sigmoid(),
             nn.Flatten(),
         )
-        initialize_weights(self)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         conv_feats = self.down_conv(input)
@@ -80,7 +73,6 @@ class Generator(nn.Module):
             UpsampleBlock(num_features, 3, kernel_size=3, stride=2, only_conv=True),
             nn.Tanh(),
         )
-        initialize_weights(self)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         feats = self.initial(self.unflatten(input))
