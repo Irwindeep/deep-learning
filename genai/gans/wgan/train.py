@@ -14,7 +14,6 @@ def train_epoch(
     gen: nn.Module,
     critic: nn.Module,
     train_loader: DataLoader[torch.Tensor],
-    loss_fn: nn.Module,
     optim_g: torch.optim.Optimizer,
     optim_c: torch.optim.Optimizer,
     desc: str,
