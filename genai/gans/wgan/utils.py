@@ -67,6 +67,7 @@ def gradient_penalty(
 
     alpha = torch.rand((N, 1, 1, 1)).repeat(1, C, H, W).to(device)
     X_i = alpha * X_r + (1 - alpha) * X_g
+    X_i.requires_grad = True
 
     critic_i = critic(X_i)
     gradient = torch.autograd.grad(
