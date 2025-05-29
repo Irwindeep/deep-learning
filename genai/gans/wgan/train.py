@@ -34,7 +34,10 @@ def train_epoch(
         c_loss = 0.0
         for _ in range(n_critic):
             noise = torch.randn(X_r.shape[0], noise_dim).to(DEVICE)
-            X_g = gen(noise)
+
+            # no need for computing generator gradients
+            with torch.no_grad():
+                X_g = gen(noise)
 
             critic_r = critic(X_r)
             critic_g = critic(X_g)
