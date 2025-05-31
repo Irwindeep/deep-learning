@@ -16,8 +16,8 @@ class VanGogh2Photo(Dataset):
         self.transform = transform
 
         self.file_dir = split if split == "train" else "test"
-        self.vangogh_files = os.listdir(os.path.join(self.root, self.file_dir, "A"))
-        self.photo_files = os.listdir(os.path.join(self.root, self.file_dir, "B"))
+        self.vangogh_files = os.listdir(os.path.join(self.root, self.file_dir + "A"))
+        self.photo_files = os.listdir(os.path.join(self.root, self.file_dir + "B"))
 
         self.dataset_len = max(len(self.vangogh_files), len(self.photo_files))
 
@@ -28,8 +28,8 @@ class VanGogh2Photo(Dataset):
         vangogh_path = self.vangogh_files[idx % len(self.vangogh_files)]
         photo_path = self.photo_files[idx % len(self.photo_files)]
 
-        vangogh_path = os.path.join(self.root, self.file_dir, "A", vangogh_path)
-        photo_path = os.path.join(self.root, self.file_dir, "B", photo_path)
+        vangogh_path = os.path.join(self.root, self.file_dir + "A", vangogh_path)
+        photo_path = os.path.join(self.root, self.file_dir + "B", photo_path)
 
         vangogh = Image.open(vangogh_path)
         photo = Image.open(photo_path)
