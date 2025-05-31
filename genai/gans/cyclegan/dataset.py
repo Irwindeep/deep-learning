@@ -12,7 +12,7 @@ class VanGogh2Photo(Dataset):
         split: Literal["train", "val"] = "train",
         transform: Optional[Callable] = None,
     ) -> None:
-        self.root = root
+        self.root = os.path.join(root, split)
         self.transform = transform
 
         self.file_dir = split if split == "train" else "test"
