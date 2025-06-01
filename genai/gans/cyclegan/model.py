@@ -54,7 +54,7 @@ class Discriminator(nn.Module):
                     in_channels=in_chann,
                     out_channels=out_chann,
                     kernel_size=4,
-                    stride=2,
+                    stride=2 if out_chann != out_channs[-1] else 1,
                     padding=1,
                     act="leaky_relu",
                 )
