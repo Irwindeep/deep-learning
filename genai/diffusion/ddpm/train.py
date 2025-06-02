@@ -20,7 +20,7 @@ def train_epoch(
 
     train_loss, num_batches = 0.0, len(train_loader)
     pbar = tqdm(train_loader, desc=desc)
-    for batch, X in enumerate(train_loader, start=1):
+    for batch, X in enumerate(pbar, start=1):
         X = X.to(DEVICE)
 
         timestep = torch.randint(0, timesteps, size=(X.size(0),), device=DEVICE)
