@@ -23,7 +23,7 @@ def train_epoch(
     for batch, X in enumerate(train_loader, start=1):
         X = X.to(DEVICE)
 
-        timestep = torch.randint(0, timesteps, size=(X.size(0)), device=DEVICE)
+        timestep = torch.randint(0, timesteps, size=(X.size(0),), device=DEVICE)
         noise = torch.randn_like(X)
 
         # diffusion
