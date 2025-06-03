@@ -63,8 +63,10 @@ def train_epoch(
         loss_c = l1(C_v, Xr_v) + l1(C_p, Xr_p)
 
         # identity loss
-        I_v, I_p = gen_v(Xr_v), gen_p(Xr_p)
-        loss_i = l1(I_v, Xr_v) + l1(I_p, Xr_p)
+        loss_i = 0.0
+        if lmbd_identity > 0:
+            I_v, I_p = gen_v(Xr_v), gen_p(Xr_p)
+            loss_i = l1(I_v, Xr_v) + l1(I_p, Xr_p)
 
         loss_g = loss_a + lmbd_cycle * loss_c + lmbd_identity * loss_i
 
