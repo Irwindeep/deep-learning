@@ -15,11 +15,12 @@ def train_epoch(
     alpha: torch.Tensor,
     desc: str,
     timesteps: int,
+    leave: bool = True,
 ) -> float:
     model.train()
 
     train_loss, num_batches = 0.0, len(train_loader)
-    pbar = tqdm(train_loader, desc=desc)
+    pbar = tqdm(train_loader, desc=desc, leave=leave)
     for batch, X in enumerate(pbar, start=1):
         X = X.to(DEVICE)
 
